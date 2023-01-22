@@ -1,6 +1,8 @@
-function _G.show_signs()
+local M = {}
+
+function M.show_signs()
   local win_height = vim.o.lines - vim.o.cmdheight - 1
-  local line2texts = get_signs()
+  local line2texts = M.get_signs()
   local buf = vim.api.nvim_create_buf(false, true)
 
   -- TODO remove the last line
@@ -22,7 +24,7 @@ function _G.show_signs()
   vim.api.nvim_open_win(buf, false, opts)
 end
 
-function _G.get_signs()
+function M.get_signs()
   local definitions = vim.fn.sign_getdefined()
   local signs = vim.fn.sign_getplaced(
     vim.fn.bufname(), -- current buffer
@@ -51,3 +53,11 @@ function _G.get_signs()
   end
   return res
 end
+
+function M.setup()
+  -- autocmd
+  local group = vim.api.nvim_create_augroup("signbar", {})
+  vim.api.nvim_create_autocmd({ "BufWritePost" }, { pattern = "*", group = group, callback = M.show_signs })
+end
+
+return M

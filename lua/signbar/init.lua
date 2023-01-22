@@ -2,15 +2,22 @@ local M = {}
 
 function M.show_signs()
   local win_height = vim.o.lines - vim.o.cmdheight - 1
-  local line2texts = M.get_signs()
+  local signs = M.get_signs()
   local buf = vim.api.nvim_create_buf(false, true)
   vim.api.nvim_buf_set_option(buf, "filetype", "signbar")
 
   -- TODO remove the last line
   -- TODO add current line sign
   for l = 1, win_height do
-    local text = line2texts[l]
-    vim.api.nvim_buf_set_lines(buf, l - 1, -1, true, { text == nil and "" or text, "" })
+    local sign = signs[l]
+    if sign == nil then
+      vim.api.nvim_buf_set_lines(buf, l - 1, -1, true, { "", "" })
+    else
+      vim.api.nvim_buf_set_lines(buf, l - 1, -1, true, { sign.text, "" })
+      local syn_group = "Signbar" .. sign.hl
+      vim.api.nvim_exec("syntax keyword " .. syn_group .. " " .. sign.text, false)
+      vim.api.nvim_exec("highlight link " .. syn_group .. " " .. sign.hl, false)
+    end
   end
 
   local opts = {
@@ -47,7 +54,7 @@ function M.get_signs()
           l = math.ceil(l * win_height / buf_height)
         end
         -- NOTE several signs may be assigned to the same key
-        res[l] = def.text
+        res[l] = { text = def.text, hl = def.texthl }
         break
       end
     end

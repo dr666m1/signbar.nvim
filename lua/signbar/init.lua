@@ -4,6 +4,7 @@ function M.show_signs()
   local win_height = vim.o.lines - vim.o.cmdheight - 1
   local line2texts = M.get_signs()
   local buf = vim.api.nvim_create_buf(false, true)
+  vim.api.nvim_buf_set_option(buf, "filetype", "signbar")
 
   -- TODO remove the last line
   -- TODO add current line sign

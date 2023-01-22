@@ -1,0 +1,1 @@
+# signbar.nvim

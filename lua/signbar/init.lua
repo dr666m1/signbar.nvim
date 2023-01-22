@@ -4,6 +4,7 @@ function _G.show_signs()
   local buf = vim.api.nvim_create_buf(false, true)
 
   -- TODO remove the last line
+  -- TODO add current line sign
   for l = 1, win_height do
     local text = line2texts[l]
     vim.api.nvim_buf_set_lines(

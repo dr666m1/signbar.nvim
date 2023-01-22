@@ -56,9 +56,12 @@ function M.get_signs()
 end
 
 function M.setup()
-  -- autocmd
   local group = vim.api.nvim_create_augroup("signbar", {})
-  vim.api.nvim_create_autocmd({ "BufWritePost" }, { pattern = "*", group = group, callback = M.show_signs })
+  vim.api.nvim_create_autocmd(
+    -- TODO enable to change event
+    { "BufWritePost" },
+    { pattern = "*", group = group, callback = M.show_signs }
+  )
 end
 
 return M

@@ -3,9 +3,11 @@ local M = {}
 function M.show_signs()
   local win_height = vim.o.lines - vim.o.cmdheight - 1
   local signs = M.get_signs()
+  -- TODO avoid opening multiple buffers
   local buf = vim.api.nvim_create_buf(false, true)
-  vim.api.nvim_buf_set_option(buf, "filetype", "signbar")
 
+  -- NOTE autocmd is needed for syntax highlight to take effect immediately
+  local group = vim.api.nvim_create_augroup("signbar_syntax", {})
   -- TODO remove the last line
   -- TODO add current line sign
   for l = 1, win_height do
@@ -15,8 +17,15 @@ function M.show_signs()
     else
       vim.api.nvim_buf_set_lines(buf, l - 1, -1, true, { sign.text, "" })
       local syn_group = "Signbar" .. sign.hl
-      vim.api.nvim_exec("syntax keyword " .. syn_group .. " " .. sign.text, false)
-      vim.api.nvim_exec("highlight link " .. syn_group .. " " .. sign.hl, false)
+      vim.api.nvim_create_autocmd({ "FileType" }, {
+        pattern = "signbar",
+        group = group,
+        callback = function()
+          -- TODO handle the signs which have the same character but have different syntax highlight
+          vim.api.nvim_exec("syntax match " .. syn_group .. ' "\\v^' .. sign.text .. '$"', false)
+          vim.api.nvim_exec("highlight link " .. syn_group .. " " .. sign.hl, false)
+        end,
+      })
     end
   end
 
@@ -30,6 +39,7 @@ function M.show_signs()
     style = "minimal",
   }
   vim.api.nvim_open_win(buf, false, opts)
+  vim.api.nvim_buf_set_option(buf, "filetype", "signbar")
 end
 
 function M.get_signs()
@@ -69,6 +79,7 @@ function M.setup()
     { "BufWritePost" },
     { pattern = "*", group = group, callback = M.show_signs }
   )
+  -- TODO enable ignore specific sign
 end
 
 return M

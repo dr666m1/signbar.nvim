@@ -3,8 +3,14 @@ local M = {}
 function M.show_signs()
   local win_height = vim.o.lines - vim.o.cmdheight - 1
   local signs = M.get_signs()
-  -- TODO avoid opening multiple buffers
-  local buf = vim.api.nvim_create_buf(false, true)
+
+  -- NOTE you can close signbar window but don't delete buffer using `:bd`!
+  if M.buf == nil then
+    M.buf = vim.api.nvim_create_buf(
+      false, -- nobuflisted
+      true -- scratch-buffer
+    )
+  end
 
   -- NOTE autocmd is needed for syntax highlight to take effect immediately
   local group = vim.api.nvim_create_augroup("signbar_syntax", {})
@@ -13,9 +19,9 @@ function M.show_signs()
   for l = 1, win_height do
     local sign = signs[l]
     if sign == nil then
-      vim.api.nvim_buf_set_lines(buf, l - 1, -1, true, { "", "" })
+      vim.api.nvim_buf_set_lines(M.buf, l - 1, -1, true, { "", "" })
     else
-      vim.api.nvim_buf_set_lines(buf, l - 1, -1, true, { sign.text, "" })
+      vim.api.nvim_buf_set_lines(M.buf, l - 1, -1, true, { sign.text, "" })
       local syn_group = "Signbar" .. sign.hl
       vim.api.nvim_create_autocmd({ "FileType" }, {
         pattern = "signbar",
@@ -38,8 +44,10 @@ function M.show_signs()
     row = 0,
     style = "minimal",
   }
-  vim.api.nvim_open_win(buf, false, opts)
-  vim.api.nvim_buf_set_option(buf, "filetype", "signbar")
+  if #vim.fn.win_findbuf(M.buf) == 0 then
+    vim.api.nvim_open_win(M.buf, false, opts)
+  end
+  vim.api.nvim_buf_set_option(M.buf, "filetype", "signbar")
 end
 
 function M.get_signs()

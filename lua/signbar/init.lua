@@ -27,8 +27,13 @@ function M.show_signs()
         pattern = "signbar",
         group = group,
         callback = function()
-          -- TODO handle regex special character
-          local syn_cmd = string.format('syntax match %s "\\v^%s%s$"', syn_group, sign.text, sign.hl)
+          local syn_cmd = string.format(
+            'syntax match %s "\\v^%s%s$"',
+            syn_group,
+            -- add characters to escape when something went wrong
+            vim.fn.escape(sign.text, "~[("),
+            sign.hl
+          )
           vim.api.nvim_exec(syn_cmd, false)
           local hl_cmd = string.format("highlight link %s %s", syn_group, sign.hl)
           vim.api.nvim_exec(hl_cmd, false)

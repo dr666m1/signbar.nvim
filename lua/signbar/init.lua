@@ -1,4 +1,3 @@
--- TODO refactor using string.format()
 local M = {}
 
 function M.show_signs()
@@ -21,6 +20,7 @@ function M.show_signs()
     if sign == nil then
       vim.api.nvim_buf_set_lines(M.buf, l - 1, -1, true, { "", "" })
     else
+      -- NOTE sign.hl is appended here to distinguish signs that have the same text
       vim.api.nvim_buf_set_lines(M.buf, l - 1, -1, true, { sign.text .. sign.hl, "" })
       local syn_group = "Signbar" .. sign.hl
       vim.api.nvim_create_autocmd({ "FileType" }, {
@@ -28,8 +28,10 @@ function M.show_signs()
         group = group,
         callback = function()
           -- TODO handle regex special character
-          vim.api.nvim_exec("syntax match " .. syn_group .. ' "\\v^' .. sign.text .. sign.hl .. '$"', false)
-          vim.api.nvim_exec("highlight link " .. syn_group .. " " .. sign.hl, false)
+          local syn_cmd = string.format('syntax match %s "\\v^%s%s$"', syn_group, sign.text, sign.hl)
+          vim.api.nvim_exec(syn_cmd, false)
+          local hl_cmd = string.format("highlight link %s %s", syn_group, sign.hl)
+          vim.api.nvim_exec(hl_cmd, false)
         end,
       })
     end

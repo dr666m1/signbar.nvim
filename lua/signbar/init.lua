@@ -4,7 +4,7 @@ function M.show_signs()
   local win_height = vim.o.lines - vim.o.cmdheight - 1
   local signs = M.get_signs()
 
-  -- NOTE you can close signbar window but don't delete buffer using `:bd`!
+  -- you can close signbar window but don't delete buffer using `:bd`!
   if M.buf == nil then
     M.buf = vim.api.nvim_create_buf(
       false, -- nobuflisted
@@ -12,9 +12,10 @@ function M.show_signs()
     )
   end
 
-  -- NOTE autocmd is needed for syntax highlight to take effect immediately
+  -- autocmd is needed for syntax highlight to take effect immediately
   local group = vim.api.nvim_create_augroup("signbar_syntax", {})
-  -- TODO remove the last line
+
+  -- after this loop, there are (win_height + 1) lines in the buffer
   for l = 1, win_height do
     local sign = signs[l]
     if sign == nil then
@@ -27,7 +28,7 @@ function M.show_signs()
       goto continue
     end
 
-    -- NOTE sign.hl is appended here to distinguish signs that have the same text
+    -- sign.hl is appended here to distinguish signs that have the same text
     vim.api.nvim_buf_set_lines(M.buf, l - 1, -1, true, { sign.text .. sign.hl, "" })
 
     local syn_group = "Signbar" .. sign.hl
@@ -91,7 +92,7 @@ function M.get_signs()
         if exceed then
           l = M.adjust_height(l)
         end
-        -- NOTE several signs may be assigned to the same key
+        -- several signs may be assigned to the same key
         res[l] = { text = def.text, hl = def.texthl }
         break
       end

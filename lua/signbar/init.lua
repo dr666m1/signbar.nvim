@@ -19,33 +19,34 @@ function M.show_signs()
     local sign = signs[l]
     if sign == nil then
       vim.api.nvim_buf_set_lines(M.buf, l - 1, -1, true, { "", "" })
-    else
-      -- NOTE sign.hl is appended here to distinguish signs that have the same text
-      if sign.hl == nil then
-        vim.api.nvim_buf_set_lines(M.buf, l - 1, -1, true, { sign.text, "" })
-        goto continue
-      else
-        vim.api.nvim_buf_set_lines(M.buf, l - 1, -1, true, { sign.text .. sign.hl, "" })
-      end
-
-      local syn_group = "Signbar" .. sign.hl
-      vim.api.nvim_create_autocmd({ "FileType" }, {
-        pattern = "signbar",
-        group = group,
-        callback = function()
-          local syn_cmd = string.format(
-            'syntax match %s "\\v^%s%s$"',
-            syn_group,
-            -- add characters to escape when something went wrong
-            vim.fn.escape(sign.text, "~[("),
-            sign.hl
-          )
-          vim.api.nvim_exec(syn_cmd, false)
-          local hl_cmd = string.format("highlight link %s %s", syn_group, sign.hl)
-          vim.api.nvim_exec(hl_cmd, false)
-        end,
-      })
+      goto continue
     end
+
+    if sign.hl == nil then
+      vim.api.nvim_buf_set_lines(M.buf, l - 1, -1, true, { sign.text, "" })
+      goto continue
+    end
+
+    -- NOTE sign.hl is appended here to distinguish signs that have the same text
+    vim.api.nvim_buf_set_lines(M.buf, l - 1, -1, true, { sign.text .. sign.hl, "" })
+
+    local syn_group = "Signbar" .. sign.hl
+    vim.api.nvim_create_autocmd({ "FileType" }, {
+      pattern = "signbar",
+      group = group,
+      callback = function()
+        local syn_cmd = string.format(
+          'syntax match %s "\\v^%s%s$"',
+          syn_group,
+          -- add characters to escape when something went wrong
+          vim.fn.escape(sign.text, "~[("),
+          sign.hl
+        )
+        vim.api.nvim_exec(syn_cmd, false)
+        local hl_cmd = string.format("highlight link %s %s", syn_group, sign.hl)
+        vim.api.nvim_exec(hl_cmd, false)
+      end,
+    })
     ::continue::
   end
 

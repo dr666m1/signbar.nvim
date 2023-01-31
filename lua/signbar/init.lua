@@ -21,14 +21,14 @@ function M.show_signs()
     if sign == nil then
       vim.api.nvim_buf_set_lines(M.buf, l - 1, -1, true, { "", "" })
     else
-      vim.api.nvim_buf_set_lines(M.buf, l - 1, -1, true, { sign.text, "" })
+      vim.api.nvim_buf_set_lines(M.buf, l - 1, -1, true, { sign.text .. sign.hl, "" })
       local syn_group = "Signbar" .. sign.hl
       vim.api.nvim_create_autocmd({ "FileType" }, {
         pattern = "signbar",
         group = group,
         callback = function()
-          -- TODO handle the signs which have the same character but have different syntax highlight
-          vim.api.nvim_exec("syntax match " .. syn_group .. ' "\\v^' .. sign.text .. '$"', false)
+          -- TODO handle regex special character
+          vim.api.nvim_exec("syntax match " .. syn_group .. ' "\\v^' .. sign.text .. sign.hl .. '$"', false)
           vim.api.nvim_exec("highlight link " .. syn_group .. " " .. sign.hl, false)
         end,
       })
@@ -45,7 +45,8 @@ function M.show_signs()
     style = "minimal",
   }
   if #vim.fn.win_findbuf(M.buf) == 0 then
-    vim.api.nvim_open_win(M.buf, false, opts)
+    local win = vim.api.nvim_open_win(M.buf, false, opts)
+    vim.api.nvim_win_set_option(win, "wrap", false)
   end
   vim.api.nvim_buf_set_option(M.buf, "filetype", "signbar")
 end

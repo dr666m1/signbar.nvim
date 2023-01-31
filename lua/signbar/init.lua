@@ -21,7 +21,13 @@ function M.show_signs()
       vim.api.nvim_buf_set_lines(M.buf, l - 1, -1, true, { "", "" })
     else
       -- NOTE sign.hl is appended here to distinguish signs that have the same text
-      vim.api.nvim_buf_set_lines(M.buf, l - 1, -1, true, { sign.text .. sign.hl, "" })
+      if sign.hl == nil then
+        vim.api.nvim_buf_set_lines(M.buf, l - 1, -1, true, { sign.text, "" })
+        goto continue
+      else
+        vim.api.nvim_buf_set_lines(M.buf, l - 1, -1, true, { sign.text .. sign.hl, "" })
+      end
+
       local syn_group = "Signbar" .. sign.hl
       vim.api.nvim_create_autocmd({ "FileType" }, {
         pattern = "signbar",
@@ -40,6 +46,7 @@ function M.show_signs()
         end,
       })
     end
+    ::continue::
   end
 
   local opts = {

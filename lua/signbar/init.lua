@@ -1,3 +1,4 @@
+-- TODO refactor using string.format()
 local M = {}
 
 function M.show_signs()
@@ -15,7 +16,6 @@ function M.show_signs()
   -- NOTE autocmd is needed for syntax highlight to take effect immediately
   local group = vim.api.nvim_create_augroup("signbar_syntax", {})
   -- TODO remove the last line
-  -- TODO add current line sign
   for l = 1, win_height do
     local sign = signs[l]
     if sign == nil then
@@ -44,10 +44,14 @@ function M.show_signs()
     row = 0,
     style = "minimal",
   }
-  if #vim.fn.win_findbuf(M.buf) == 0 then
-    local win = vim.api.nvim_open_win(M.buf, false, opts)
-    vim.api.nvim_win_set_option(win, "wrap", false)
+  if M.win == nil or #vim.fn.win_findbuf(M.buf) == 0 then
+    M.win = vim.api.nvim_open_win(M.buf, false, opts)
+    vim.api.nvim_win_set_option(M.win, "wrap", false)
+    vim.api.nvim_win_set_option(M.win, "cursorline", true)
   end
+
+  local cmd = string.format("call setpos('.', [0, %d, 1, 0])", M.adjust_height(vim.fn.line(".")))
+  vim.fn.win_execute(M.win, cmd)
   vim.api.nvim_buf_set_option(M.buf, "filetype", "signbar")
 end
 
@@ -70,7 +74,7 @@ function M.get_signs()
       if def.name == sign.name then
         local l = sign.lnum
         if exceed then
-          l = math.ceil(l * win_height / buf_height)
+          l = M.adjust_height(l)
         end
         -- NOTE several signs may be assigned to the same key
         res[l] = { text = def.text, hl = def.texthl }
@@ -79,6 +83,12 @@ function M.get_signs()
     end
   end
   return res
+end
+
+function M.adjust_height(line)
+  local win_height = vim.o.lines - vim.o.cmdheight - 1
+  local buf_height = vim.fn.line("$")
+  return math.ceil(line * win_height / buf_height)
 end
 
 function M.setup()

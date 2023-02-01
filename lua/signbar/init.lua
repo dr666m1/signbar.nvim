@@ -107,9 +107,20 @@ function M.adjust_height(line)
   return math.ceil(line * win_height / buf_height)
 end
 
-function M.setup()
+function M.setup(config)
+  config = config or {}
+
   local group = vim.api.nvim_create_augroup("signbar", {})
-  vim.api.nvim_create_autocmd({ "CursorMoved" }, { pattern = "*", group = group, callback = M.show_signs })
+  if config.refresh_interval == nil then
+    vim.api.nvim_create_autocmd({ "CursorMoved" }, { pattern = "*", group = group, callback = M.show_signs })
+  else
+    -- :h lua-loop
+    if M.timer ~= nil then -- in the case that M.setup is called multiple times
+      M.timer:stop()
+    end
+    M.timer = vim.loop.new_timer()
+    M.timer:start(0, config.refresh_interval, vim.schedule_wrap(M.show_signs))
+  end
   -- TODO enable ignore specific sign
 end
 

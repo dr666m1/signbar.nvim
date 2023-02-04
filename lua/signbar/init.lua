@@ -126,6 +126,7 @@ function M.setup(config)
     if M.timer ~= nil then -- in the case that M.setup is called multiple times
       M.timer:stop()
     end
+    -- NOTE if refresh_interval is too short, you'll see E322
     M.timer = vim.loop.new_timer()
     M.timer:start(0, config.refresh_interval, vim.schedule_wrap(M.show_signs))
   end
@@ -133,6 +134,8 @@ function M.setup(config)
     pattern = "*",
     group = group,
     callback = function()
+      -- WinScrolled inclues moving to another window
+      -- when you move to signbar window, it is going to be closed soon
       vim.api.nvim_win_close(
         M.win,
         true -- force

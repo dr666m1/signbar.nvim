@@ -73,8 +73,7 @@ function M.show_signs()
     vim.api.nvim_win_set_option(M.win, "cursorline", true)
   end
 
-  -- TODO sometimes M.adjust_height is not needed
-  local cmd = string.format("call setpos('.', [0, %d, 1, 0])", M.adjust_height(vim.fn.line(".")))
+  local cmd = string.format("call setpos('.', [0, %d, 1, 0])", M.adjust_idx(vim.fn.line(".")))
   vim.fn.win_execute(M.win, cmd)
   vim.api.nvim_buf_set_option(M.buf, "filetype", "signbar")
 end
@@ -88,20 +87,12 @@ function M.get_signs()
     }
   )[1].signs
 
-  local win_height = vim.o.lines - vim.o.cmdheight - 1
-  local buf_height = vim.fn.line("$")
-  local exceed = buf_height > win_height
-
   local res = {}
   for _, sign in pairs(signs) do
     for _, def in pairs(definitions) do
       if def.name == sign.name then
-        local l = sign.lnum
-        if exceed then
-          l = M.adjust_height(l)
-        end
         -- several signs may be assigned to the same key
-        res[l] = { text = def.text, hl = def.texthl }
+        res[M.adjust_idx(sign.lnum)] = { text = def.text, hl = def.texthl }
         break
       end
     end
@@ -109,10 +100,16 @@ function M.get_signs()
   return res
 end
 
-function M.adjust_height(line)
+function M.adjust_idx(idx)
   local win_height = vim.o.lines - vim.o.cmdheight - 1
   local buf_height = vim.fn.line("$")
-  return math.ceil(line * win_height / buf_height)
+  local exceed = buf_height > win_height
+
+  if not exceed then
+    return idx
+  end
+
+  return math.ceil(idx * win_height / buf_height)
 end
 
 function M.setup(config)

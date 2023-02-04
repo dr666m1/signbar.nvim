@@ -66,6 +66,7 @@ function M.show_signs()
     vim.api.nvim_win_set_option(M.win, "cursorline", true)
   end
 
+  -- TODO sometimes M.adjust_height is not needed
   local cmd = string.format("call setpos('.', [0, %d, 1, 0])", M.adjust_height(vim.fn.line(".")))
   vim.fn.win_execute(M.win, cmd)
   vim.api.nvim_buf_set_option(M.buf, "filetype", "signbar")

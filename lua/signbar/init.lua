@@ -15,21 +15,21 @@ function M.show_signs()
   -- autocmd is needed for syntax highlight to take effect immediately
   local group = vim.api.nvim_create_augroup("signbar_syntax", {})
 
-  -- after this loop, there are (win_height + 1) lines in the buffer
+  local lines = {}
   for l = 1, win_height do
     local sign = signs[l]
     if sign == nil then
-      vim.api.nvim_buf_set_lines(M.buf, l - 1, -1, true, { "", "" })
+      table.insert(lines, "")
       goto continue
     end
 
     if sign.hl == nil then
-      vim.api.nvim_buf_set_lines(M.buf, l - 1, -1, true, { sign.text, "" })
+      table.insert(lines, sign.text)
       goto continue
     end
 
     -- sign.hl is appended here to distinguish signs that have the same text
-    vim.api.nvim_buf_set_lines(M.buf, l - 1, -1, true, { sign.text .. sign.hl, "" })
+    table.insert(lines, sign.text .. sign.hl)
 
     local syn_group = "Signbar" .. sign.hl
     vim.api.nvim_create_autocmd({ "FileType" }, {
@@ -50,6 +50,13 @@ function M.show_signs()
     })
     ::continue::
   end
+  vim.api.nvim_buf_set_lines(
+    M.buf,
+    0, -- start
+    -1, -- end (lenth + 1 - 1)
+    true, -- out-of-bound shoud be an error
+    lines
+  )
 
   local opts = {
     relative = "editor",

@@ -67,6 +67,13 @@ function M.show_signs()
     row = 0,
     style = "minimal",
   }
+  if M.win ~= nil and M.vim_o_lines ~= vim.o.lines then
+    M.vim_o_lines = vim.o.lines
+    vim.api.nvim_win_close(
+      M.win,
+      true -- force
+    )
+  end
   if M.win == nil or #vim.fn.win_findbuf(M.buf) == 0 then
     M.win = vim.api.nvim_open_win(M.buf, false, opts)
     vim.api.nvim_win_set_option(M.win, "wrap", false)
@@ -114,6 +121,8 @@ end
 
 function M.setup(config)
   config = config or {}
+  M.vim_o_lines = vim.o.lines
+  M.show_signs()
 
   local group = vim.api.nvim_create_augroup("signbar", {})
   if config.refresh_interval == nil then
@@ -123,26 +132,11 @@ function M.setup(config)
     if M.timer ~= nil then -- in the case that M.setup is called multiple times
       M.timer:stop()
     end
-    -- NOTE if refresh_interval is too short, you'll see E322
     M.timer = vim.loop.new_timer()
-    M.timer:start(0, config.refresh_interval, vim.schedule_wrap(M.show_signs))
+    -- NOTE if refresh_interval is too short, you'll see E322
+    M.timer:start(1000, config.refresh_interval, vim.schedule_wrap(M.show_signs))
   end
-  vim.api.nvim_create_autocmd({ "WinScrolled" }, {
-    pattern = "*",
-    group = group,
-    callback = function()
-      -- WinScrolled inclues moving to another window
-      -- when you move to signbar window, it is going to be closed soon
-      vim.api.nvim_win_close(
-        M.win,
-        true -- force
-      )
-      M.show_signs()
-    end,
-  })
   -- TODO enable ignore specific sign
-
-  M.show_signs()
 end
 
 return M

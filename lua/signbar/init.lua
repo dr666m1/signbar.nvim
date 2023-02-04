@@ -122,13 +122,17 @@ function M.setup(config)
     M.timer = vim.loop.new_timer()
     M.timer:start(0, config.refresh_interval, vim.schedule_wrap(M.show_signs))
   end
-  vim.api.nvim_create_autocmd({ "WinScrolled" }, { pattern = "*", group = group, callback = function ()
-    vim.api.nvim_win_close(
-      M.win,
-      true -- force
-    )
-    M.show_signs()
-  end })
+  vim.api.nvim_create_autocmd({ "WinScrolled" }, {
+    pattern = "*",
+    group = group,
+    callback = function()
+      vim.api.nvim_win_close(
+        M.win,
+        true -- force
+      )
+      M.show_signs()
+    end,
+  })
   -- TODO enable ignore specific sign
 
   M.show_signs()

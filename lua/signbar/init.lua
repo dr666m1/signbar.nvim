@@ -1,3 +1,4 @@
+local Set = require("signbar.set")
 local M = {}
 
 function M.show_signs()
@@ -98,6 +99,12 @@ function M.get_signs()
   for _, sign in pairs(signs) do
     for _, def in pairs(definitions) do
       if def.name == sign.name then
+        if M.ignored_sign_names:contains(sign.name) then
+          break
+        end
+        if M.ignored_sign_groups:contains(sign.group) then
+          break
+        end
         -- several signs may be assigned to the same key
         res[M.adjust_idx(sign.lnum)] = { text = def.text, hl = def.texthl }
         break
@@ -136,7 +143,10 @@ function M.setup(config)
     -- NOTE if refresh_interval is too short, you'll see E322
     M.timer:start(1000, config.refresh_interval, vim.schedule_wrap(M.show_signs))
   end
-  -- TODO enable ignore specific sign
+  -- to check sign groups or names use ...
+  -- :sign place group=*
+  M.ignored_sign_names = Set:new(config.ignored_sign_names or {})
+  M.ignored_sign_groups = Set:new(config.ignored_sign_groups or {})
 end
 
 return M

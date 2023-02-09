@@ -1,4 +1,5 @@
 local Set = require("signbar.set")
+local utils = require("signbar.utils")
 local M = {}
 
 function M.show_signs()
@@ -68,8 +69,7 @@ function M.show_signs()
     row = 0,
     style = "minimal",
   }
-  if M.win ~= nil and M.vim_o_lines ~= vim.o.lines then
-    M.vim_o_lines = vim.o.lines
+  if M.win and utils.resized() then
     vim.api.nvim_win_close(
       M.win,
       true -- force
@@ -81,7 +81,7 @@ function M.show_signs()
     vim.api.nvim_win_set_option(M.win, "cursorline", true)
   end
 
-  local cmd = string.format("call setpos('.', [0, %d, 1, 0])", M.adjust_idx(vim.fn.line(".")))
+  local cmd = string.format("call setpos('.', [0, %d, 1, 0])", utils.adjust_idx(vim.fn.line(".")))
   vim.fn.win_execute(M.win, cmd)
   vim.api.nvim_buf_set_option(M.buf, "filetype", "signbar")
 end
@@ -106,7 +106,7 @@ function M.get_signs()
           break
         end
         -- several signs may be assigned to the same key
-        res[M.adjust_idx(sign.lnum)] = { text = def.text, hl = def.texthl }
+        res[utils.adjust_idx(sign.lnum)] = { text = def.text, hl = def.texthl }
         break
       end
     end
@@ -114,21 +114,8 @@ function M.get_signs()
   return res
 end
 
-function M.adjust_idx(idx)
-  local win_height = vim.o.lines - vim.o.cmdheight - 1
-  local buf_height = vim.fn.line("$")
-  local exceed = buf_height > win_height
-
-  if not exceed then
-    return idx
-  end
-
-  return math.ceil(idx * win_height / buf_height)
-end
-
 function M.setup(config)
   config = config or {}
-  M.vim_o_lines = vim.o.lines
   M.show_signs()
 
   local group = vim.api.nvim_create_augroup("signbar", {})

@@ -87,7 +87,11 @@ function M.show_signs()
 end
 
 function M.get_signs()
-  local definitions = vim.fn.sign_getdefined()
+  local definitions = {}
+  for _, d in ipairs(vim.fn.sign_getdefined()) do
+    definitions[d.name] = { text = d.text, texthl = d.texthl }
+  end
+
   local signs = vim.fn.sign_getplaced(
     vim.fn.bufname(), -- current buffer
     {
@@ -97,19 +101,15 @@ function M.get_signs()
 
   local res = {}
   for _, sign in pairs(signs) do
-    for _, def in pairs(definitions) do
-      if def.name == sign.name then
-        if M.ignored_sign_names:contains(sign.name) then
-          break
-        end
-        if M.ignored_sign_groups:contains(sign.group) then
-          break
-        end
-        -- several signs may be assigned to the same key
-        res[utils.adjust_idx(sign.lnum)] = { text = def.text, hl = def.texthl }
-        break
-      end
+    if M.ignored_sign_names:contains(sign.name) then
+      goto continue
     end
+    if M.ignored_sign_groups:contains(sign.group) then
+      goto continue
+    end
+    -- several signs may be assigned to the same key
+    res[utils.adjust_idx(sign.lnum)] = { text = definitions[sign.name].text, hl = definitions[sign.name].texthl }
+    ::continue::
   end
   return res
 end

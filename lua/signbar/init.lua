@@ -2,8 +2,7 @@ local Set = require("signbar.set")
 local utils = require("signbar.utils")
 local M = {}
 
-function M.show_signs()
-  local win_height = vim.o.lines - vim.o.cmdheight - 1
+function M.refresh()
   local signs = M.get_signs()
 
   -- you can close signbar window but don't delete buffer using `:bd`!
@@ -18,6 +17,7 @@ function M.show_signs()
   local group = vim.api.nvim_create_augroup("signbar_syntax", {})
 
   local lines = {}
+  local win_height = vim.o.lines - vim.o.cmdheight - 1
   for l = 1, win_height do
     local sign = signs[l]
     if sign == nil then
@@ -116,11 +116,11 @@ end
 
 function M.setup(config)
   config = config or {}
-  M.show_signs()
+  M.refresh()
 
   local group = vim.api.nvim_create_augroup("signbar", {})
   if config.refresh_interval == nil then
-    vim.api.nvim_create_autocmd({ "CursorMoved" }, { pattern = "*", group = group, callback = M.show_signs })
+    vim.api.nvim_create_autocmd({ "CursorMoved" }, { pattern = "*", group = group, callback = M.refresh })
   else
     -- :h lua-loop
     if M.timer ~= nil then -- in the case that M.setup is called multiple times
@@ -128,7 +128,7 @@ function M.setup(config)
     end
     M.timer = vim.loop.new_timer()
     -- NOTE if refresh_interval is too short, you'll see E322
-    M.timer:start(1000, config.refresh_interval, vim.schedule_wrap(M.show_signs))
+    M.timer:start(1000, config.refresh_interval, vim.schedule_wrap(M.refresh))
   end
   -- to check sign groups or names use ...
   -- :sign place group=*

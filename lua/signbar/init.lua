@@ -6,18 +6,13 @@ function M.refresh()
   local signs = M.get_signs()
 
   -- you can close signbar window but don't delete buffer using `:bd`!
-  if M.buf == nil then
-    M.buf = vim.api.nvim_create_buf(
-      false, -- nobuflisted
-      true -- scratch-buffer
-    )
-  end
+  M.open_buf_if_not_exists()
 
   -- autocmd is needed for syntax highlight to take effect immediately
   local group = vim.api.nvim_create_augroup("signbar_syntax", {})
-
   local lines = {}
-  local win_height = vim.o.lines - vim.o.cmdheight - 1
+  local win_height = vim.o.lines - vim.o.cmdheight - 1 -- -1 is statusline
+
   for l = 1, win_height do
     local sign = signs[l]
     if sign == nil then
@@ -45,7 +40,10 @@ function M.refresh()
           vim.fn.escape(sign.text, "~[("),
           sign.hl
         )
-        vim.api.nvim_exec(syn_cmd, false)
+        vim.api.nvim_exec(
+          syn_cmd,
+          false -- do not capture output
+        )
         local hl_cmd = string.format("highlight link %s %s", syn_group, sign.hl)
         vim.api.nvim_exec(hl_cmd, false)
       end,
@@ -60,26 +58,14 @@ function M.refresh()
     lines
   )
 
-  local opts = {
-    relative = "editor",
-    width = 2,
-    height = vim.o.lines - vim.o.cmdheight - 1,
-    anchor = "NE",
-    col = vim.o.columns,
-    row = 0,
-    style = "minimal",
-  }
   if M.win and utils.resized() then
     vim.api.nvim_win_close(
       M.win,
       true -- force
     )
   end
-  if M.win == nil or #vim.fn.win_findbuf(M.buf) == 0 then
-    M.win = vim.api.nvim_open_win(M.buf, false, opts)
-    vim.api.nvim_win_set_option(M.win, "wrap", false)
-    vim.api.nvim_win_set_option(M.win, "cursorline", true)
-  end
+
+  M.open_win_if_not_exists()
 
   local cmd = string.format("call setpos('.', [0, %d, 1, 0])", utils.adjust_idx(vim.fn.line(".")))
   vim.fn.win_execute(M.win, cmd)
@@ -112,6 +98,36 @@ function M.get_signs()
     ::continue::
   end
   return res
+end
+
+function M.open_buf_if_not_exists()
+  if M.buf then
+    return
+  end
+
+  M.buf = vim.api.nvim_create_buf(
+    false, -- nobuflisted
+    true -- scratch-buffer
+  )
+end
+
+function M.open_win_if_not_exists()
+  if M.win and #vim.fn.win_findbuf(M.buf) > 0 then
+    return
+  end
+
+  local opts = {
+    relative = "editor",
+    width = 2,
+    height = vim.o.lines - vim.o.cmdheight - 1,
+    anchor = "NE",
+    col = vim.o.columns,
+    row = 0,
+    style = "minimal",
+  }
+  M.win = vim.api.nvim_open_win(M.buf, false, opts)
+  vim.api.nvim_win_set_option(M.win, "wrap", false)
+  vim.api.nvim_win_set_option(M.win, "cursorline", true)
 end
 
 function M.setup(config)

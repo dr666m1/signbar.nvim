@@ -7,4 +7,5 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
+      # TODO make use of cache to install stylua
       - run: make test

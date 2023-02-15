@@ -9,13 +9,13 @@ Use your favorite pacakge manager.
 e.g. with [packer](https://github.com/wbthomason/packer.nvim):
 
 ```lua
-use { 'dr666m1/signbar.nvim' }
+use { "dr666m1/signbar.nvim" }
 ```
 
 ## Setup
 
 ```lua
-require 'signbar'.setup {
+require("signbar").setup {
   -- by default signbar is refreshed on every cursor move
   -- if refresh_interval is too short, E322 may occur
   refresh_interval = 1000, -- milliseconds, default: null
@@ -29,3 +29,9 @@ require 'signbar'.setup {
 ## Contributing
 If you find any bugs, feel free to create an issue.
 PRs are also welcome but please create an issue before introducing a new feature.
+
+## See also
+If you are interested in the plugins used in the video, check out these awesome repositories!
+
+* [marks.nvim](https://github.com/chentoast/marks.nvim)
+* [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim)

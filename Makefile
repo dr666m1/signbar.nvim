@@ -1,7 +1,7 @@
 # you have to specify features to format `goto` statement
 .PHONY: install
 install:
-	command -v stylua || cargo install stylua --features lua52
+	./scripts/install.sh
 
 .PHONY: test
 test: install

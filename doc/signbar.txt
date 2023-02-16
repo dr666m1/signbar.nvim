@@ -3,35 +3,38 @@
 Author: dr666m1 <skndr666m1@gmail.com>
 
 ==============================================================================
-CONTENTS                                                    *signbar-contenst*
+CONTENTS                                                    *signbar-contents*
 
  1. Usage
  2. Contributing
  3. License
 
 ==============================================================================
- 1. Usage                                                      *signbar-usage*
+ 1. USAGE                                                      *signbar-usage*
 
 Setup should be run in a lua file.
 >
   require("signbar").setup {
-    signbar.refresh_interval = null,
+    signbar.refresh_interval = nil,
   }
 <
 The setup function takes in a table to configure this plugin.
 Here is a list of the options available in the setup call:
 
-*signbar.refresh_interval*
-Set refresh interval in milliseconds (default: nil).
-If nil, signbar is refreshed on every cursor move.
+                                                    *signbar-refresh_interval*
+  refresh_interval: integer (default: nil)
+    Set refresh interval in milliseconds.
+    If nil, signbar is refreshed on every cursor move.
 
-*signbar.ignored_sign_names*
-Conceal specific sign names (default: {}).
-`:sign place group=*` is useful to list sign names.
+                                                  *signbar-ignored_sign_names*
+  ignored_sign_names: table (default: {})
+    Conceal specific sign names.
+    `:sign place group=*` is useful to list sign names.
 
-*signbar.ignored_sign_grups*
-Conceal specific sign groups (default: {}).
-`:sign place group=*` is useful to list sign groups.
+                                                  *signbar-ignored_sign_grups*
+  ignored_sign_grups: table (default: {})
+    Conceal specific sign groups.
+    `:sign place group=*` is useful to list sign groups.
 
 ==============================================================================
  2. CONTRIBUTING                                        *signbar-contributing*
@@ -46,4 +49,4 @@ GitHub: https://github.com/chentau/marks.nvim
 
 MIT License
 
-vim:ts=2:sw=2:ft=help
+vim:tw=78:ts=2:sw=2:ft=help

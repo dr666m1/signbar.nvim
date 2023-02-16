@@ -143,11 +143,8 @@ function M.setup(config)
       M.timer:stop()
     end
     M.timer = vim.loop.new_timer()
-    -- NOTE if refresh_interval is too short, you'll see E322
     M.timer:start(1000, config.refresh_interval, vim.schedule_wrap(M.refresh))
   end
-  -- to check sign groups or names use ...
-  -- :sign place group=*
   M.ignored_sign_names = Set:new(config.ignored_sign_names or {})
   M.ignored_sign_groups = Set:new(config.ignored_sign_groups or {})
 end

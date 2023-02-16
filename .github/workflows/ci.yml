@@ -8,4 +8,10 @@ jobs:
         with:
           toolchain: stable
       # TODO make use of cache to install stylua
+      # - uses: actions/cache@v3
+      #   with:
+      #     key: ${{ hashFiles('./Makefile') }}
+      #     path: 
+      - run: echo ${{ hashFiles('./Makefile') }}
       - run: make test
+      - run: which stylua

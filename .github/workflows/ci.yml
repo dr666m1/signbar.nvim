@@ -9,6 +9,6 @@ jobs:
           toolchain: stable
       - uses: actions/cache@v3
         with:
-          key: ${{ hashFiles('./Makefile') }}
+          key: ${{ hashFiles('./scripts/install.sh') }}
           path: ~/.cargo/bin
       - run: make test

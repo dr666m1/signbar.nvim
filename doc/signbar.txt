@@ -5,12 +5,12 @@ Author: dr666m1 <skndr666m1@gmail.com>
 ==============================================================================
 CONTENTS                                                    *signbar-contents*
 
- 1. Usage
- 2. Contributing
- 3. License
+  1. Usage         |signbar-usage|
+  2. Contributing  |signbar-contributing|
+  3. License       |signbar-license|
 
 ==============================================================================
- 1. USAGE                                                      *signbar-usage*
+  1. USAGE                                                     *signbar-usage*
 
 Setup should be run in a lua file.
 >
@@ -37,7 +37,7 @@ Here is a list of the options available in the setup call:
     `:sign place group=*` is useful to list sign groups.
 
 ==============================================================================
- 2. CONTRIBUTING                                        *signbar-contributing*
+  2. CONTRIBUTING                                       *signbar-contributing*
 
 If you find any bugs, feel free to create an issue. PRs are also welcome but
 please create an issue before introducing a new feature.
@@ -45,7 +45,7 @@ please create an issue before introducing a new feature.
 GitHub: https://github.com/chentau/marks.nvim
 
 ==============================================================================
- 3. LICENSE                                                  *signbar-license*
+  3. LICENSE                                                 *signbar-license*
 
 MIT License
 

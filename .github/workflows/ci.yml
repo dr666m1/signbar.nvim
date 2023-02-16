@@ -7,11 +7,9 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-      # TODO make use of cache to install stylua
-      # - uses: actions/cache@v3
-      #   with:
-      #     key: ${{ hashFiles('./Makefile') }}
-      #     path: 
-      - run: echo ${{ hashFiles('./Makefile') }}
+      - uses: actions/cache@v3
+        with:
+          key: ${{ hashFiles('./Makefile') }}
+          path: /home/runner/cargo/bin
+      - run: echo ${{ env.HOME }}
       - run: make test
-      - run: which stylua

@@ -10,6 +10,5 @@ jobs:
       - uses: actions/cache@v3
         with:
           key: ${{ hashFiles('./Makefile') }}
-          path: /home/runner/cargo/bin
-      - run: echo ${{ env.HOME }}
+          path: ~/.cargo/bin
       - run: make test

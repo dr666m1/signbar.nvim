@@ -4,11 +4,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
       - uses: actions/cache@v3
         with:
           key: ${{ hashFiles('./scripts/install.sh') }}
           path: ~/.cargo/bin
+      - uses: actions-rs/toolchain@v1
+        if: ${{ ! steps.cache.outputs.cache-hit }}
+        with:
+          toolchain: stable
       - run: make test

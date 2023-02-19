@@ -1,0 +1,52 @@
+*signbar.nvim* a plugin to show the signs like a minimap
+
+Author: dr666m1 <skndr666m1@gmail.com>
+
+==============================================================================
+CONTENTS                                                    *signbar-contents*
+
+  1. Usage         |signbar-usage|
+  2. Contributing  |signbar-contributing|
+  3. License       |signbar-license|
+
+==============================================================================
+  1. USAGE                                                     *signbar-usage*
+
+Setup should be run in a lua file.
+>
+  require("signbar").setup {
+    signbar.refresh_interval = nil,
+  }
+<
+The setup function takes in a table to configure this plugin.
+Here is a list of the options available in the setup call:
+
+                                                    *signbar-refresh_interval*
+  refresh_interval: integer (default: nil)~
+    Set refresh interval in milliseconds.
+    If nil, signbar is refreshed on every cursor move.
+
+                                                  *signbar-ignored_sign_names*
+  ignored_sign_names: table (default: {})~
+    Conceal specific sign names.
+    `:sign place group=*` is useful to list sign names.
+
+                                                  *signbar-ignored_sign_grups*
+  ignored_sign_grups: table (default: {})~
+    Conceal specific sign groups.
+    `:sign place group=*` is useful to list sign groups.
+
+==============================================================================
+  2. CONTRIBUTING                                       *signbar-contributing*
+
+If you find any bugs, feel free to create an issue. PRs are also welcome but
+please create an issue before introducing a new feature.
+
+GitHub: https://github.com/chentau/marks.nvim
+
+==============================================================================
+  3. LICENSE                                                 *signbar-license*
+
+MIT License
+
+vim:tw=78:et:ts=2:sw=2:ft=help

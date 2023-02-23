@@ -8,9 +8,5 @@ jobs:
         with:
           key: ${{ hashFiles('./scripts/install.sh') }}
           path: ~/.cargo/bin
-      # if cache exists, cargo is already installed
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
       # if cache exists, stylua is already installed
       - run: make test
